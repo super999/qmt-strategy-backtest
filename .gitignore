@@ -1,0 +1,38 @@
+# QMT 系统文件
+bin.x64/
+data/
+datadir/
+resource/
+license/
+indexConfig/
+config/
+export_data/
+export_data_backup/
+template/
+thirdResources/
+plugins/
+webwidget/
+xtmodel/
+translations/
+customerDLL/
+quoter/
+batchOrder/
+license/
+
+# 用户运行数据
+userdata/data/
+userdata/log/
+userdata/dumps/
+userdata/users/
+userdata_mini/
+
+# 临时文件
+__pycache__/
+*.pyc
+*.log
+.rzrk/
+
+# Python缓存
+python/__pycache__/
+python/formulaLayout/
+python/malldown/

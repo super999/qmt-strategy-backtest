@@ -1,0 +1,487 @@
+local EXCHANGE_STATUS_BEFORE_TRADING = 48 --开盘前
+local EXCHANGE_STATUS_NOTRADING = 49 --非交易
+local EXCHANGE_STATUS_CONTINOUS = 50 -- 连续交易
+local EXCHANGE_STATUS_AUCTION_ORDERING = 51 -- 集合竞价
+local EXCHANGE_STATUS_AUCTION_BALANCE = 52 -- 集合竞价平衡
+local EXCHANGE_STATUS_AUCTION_MATCH = 53 -- 集合竞价撮合
+local EXCHANGE_STATUS_CLOSED = 54 -- 收盘
+local EXCHANGE_STATUS_ONLY_CANCEL = 55 -- 只允许撤单
+local EXCHANGE_STATUS_DAZONG_ORDERING = 56 -- 大宗申报
+local EXCHANGE_STATUS_DAZONG_INTENTION_ORDERING = 57 --大宗意向申报
+local EXCHANGE_STATUS_DAZONG_CONFIRM_ORDERING = 58 --大宗上海成交申报
+local EXCHANGE_STATUS_DAZONG_CLOSE_PRICE_ORDERING = 59 --深圳盘后定价申报
+local EXCHANGE_STATUS_ONLY_GOLD_DELIVERY = 60 -- 交割报单
+local EXCHANGE_STATUS_ONLY_GOLD_MIDDLE = 61 -- 中立仓申报
+local EXCHANGE_STATUS_AFTER_HOURS_SALE = 62 -- 盘后协议买卖
+local EXCHANGE_STATUS_CLOSING_AUCTION_MATCH = 63 --收盘集合竞价 用于上海
+
+local XT_RCC_SYSTEM_CODE_SECURITIES_ALL = 1001
+local XT_RCC_SYSTEM_CODE_SECURITIES_REPURCHASE = 1171
+local XT_RCC_SYSTEM_CODE_PLEDGE_REPURCHASE_SZ = 1175
+local XT_RCC_SYSTEM_CODE_PLEDGE_REPURCHASE_SH = 1176
+local XT_RCC_SYSTEM_CODE_CASH_TRANSACTIONS_SH = 102000
+local XT_RCC_SYSTEM_CODE_SOTC_BANK_PLAN = 5602 --银行理财
+local XT_RCC_SYSTEM_CODE_SOTC_INCOME_CERTIF = 5603 --收益凭证
+local XT_RCC_SYSTEM_CODE_SOTC_AGG_PLAN = 5604 --集合计划
+local XT_RCC_SYSTEM_CODE_SOTC_PRIV_PRD = 5605 --私募产品
+
+local OPT_BUY = 18
+local OPT_SELL = 19
+local OPT_PLEDGE_IN = 30
+local OPT_PLEDGE_OUT = 31
+local OPT_OTC_FUND_SUBSCRIBE = 200 --认购
+local OPT_OTC_FUND_PURCHASE = 201 --申购
+local OPT_OTC_FUND_REDEMPTION = 202 --赎回
+
+local OPT_1045 = 1045
+local OPT_1046 = 1046
+local OPT_1047 = 1047
+local OPT_1048 = 1048
+local OPT_1049 = 1049
+local OPT_1050 = 1050
+
+local OPT_TRANSACTION_IN_CASH_BUY = 1052
+local OPT_TRANSACTION_IN_CASH_SELL = 1053
+
+local g_status = {
+
+-- 中金所
+CFFEX = {
+	{000000, EXCHANGE_STATUS_CLOSED},
+	{071400, EXCHANGE_STATUS_BEFORE_TRADING},
+	{092500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{092900, EXCHANGE_STATUS_AUCTION_MATCH},
+	{093000, EXCHANGE_STATUS_CONTINOUS},
+	{113000, EXCHANGE_STATUS_NOTRADING},
+	{130000, EXCHANGE_STATUS_CONTINOUS},
+	{151500, EXCHANGE_STATUS_CLOSED},
+},
+
+ -- 上期所
+SHFE = {
+	{000000, EXCHANGE_STATUS_CONTINOUS},
+	{023000, EXCHANGE_STATUS_NOTRADING},
+	{075000, EXCHANGE_STATUS_BEFORE_TRADING},
+	{085500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{085900, EXCHANGE_STATUS_AUCTION_MATCH},
+	{090000, EXCHANGE_STATUS_CONTINOUS},
+	{101500, EXCHANGE_STATUS_NOTRADING},
+	{103000, EXCHANGE_STATUS_CONTINOUS},
+	{113000, EXCHANGE_STATUS_NOTRADING},
+	{133000, EXCHANGE_STATUS_CONTINOUS},
+	{150000, EXCHANGE_STATUS_CLOSED},
+	{205500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{205900, EXCHANGE_STATUS_AUCTION_MATCH},
+	{210000, EXCHANGE_STATUS_CONTINOUS},
+},
+
+ -- 原油期货
+INE = {
+	{000000, EXCHANGE_STATUS_CONTINOUS},
+	{023000, EXCHANGE_STATUS_NOTRADING},
+	{075000, EXCHANGE_STATUS_BEFORE_TRADING},
+	{085500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{085900, EXCHANGE_STATUS_AUCTION_MATCH},
+	{090000, EXCHANGE_STATUS_CONTINOUS},
+	{101500, EXCHANGE_STATUS_NOTRADING},
+	{103000, EXCHANGE_STATUS_CONTINOUS},
+	{113000, EXCHANGE_STATUS_NOTRADING},
+	{133000, EXCHANGE_STATUS_CONTINOUS},
+	{150000, EXCHANGE_STATUS_CLOSED},
+	{205500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{205900, EXCHANGE_STATUS_AUCTION_MATCH},
+	{210000, EXCHANGE_STATUS_CONTINOUS},
+},
+
+-- 郑商所
+CZCE = {
+	{000000, EXCHANGE_STATUS_CLOSED},
+	{074000, EXCHANGE_STATUS_BEFORE_TRADING}, 
+	{085500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{085900, EXCHANGE_STATUS_AUCTION_MATCH},
+	{090000, EXCHANGE_STATUS_CONTINOUS},
+	{101500, EXCHANGE_STATUS_NOTRADING},
+	{103000, EXCHANGE_STATUS_CONTINOUS},
+	{113000, EXCHANGE_STATUS_NOTRADING},
+	{133000, EXCHANGE_STATUS_CONTINOUS},
+	{150000, EXCHANGE_STATUS_CLOSED},
+	{205500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{205900, EXCHANGE_STATUS_AUCTION_MATCH},
+	{210000, EXCHANGE_STATUS_CONTINOUS},
+	{230000, EXCHANGE_STATUS_NOTRADING},
+},
+
+ -- 大商所
+DCE = {
+	{000000, EXCHANGE_STATUS_CONTINOUS},
+	{023000, EXCHANGE_STATUS_NOTRADING},
+	{074000, EXCHANGE_STATUS_BEFORE_TRADING}, 
+	{085500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{085900, EXCHANGE_STATUS_AUCTION_MATCH},
+	{090000, EXCHANGE_STATUS_CONTINOUS},
+	{101500, EXCHANGE_STATUS_NOTRADING},
+	{103000, EXCHANGE_STATUS_CONTINOUS},
+	{113000, EXCHANGE_STATUS_NOTRADING},
+	{133000, EXCHANGE_STATUS_CONTINOUS},
+	{150000, EXCHANGE_STATUS_CLOSED},	
+	{205500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{205900, EXCHANGE_STATUS_AUCTION_MATCH},
+	{210000, EXCHANGE_STATUS_CONTINOUS},
+},
+
+ -- 广期所
+GFEX = {
+	{000000, EXCHANGE_STATUS_CONTINOUS},
+	{023000, EXCHANGE_STATUS_NOTRADING},
+	{074000, EXCHANGE_STATUS_BEFORE_TRADING}, 
+	{085500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{085900, EXCHANGE_STATUS_AUCTION_MATCH},
+	{090000, EXCHANGE_STATUS_CONTINOUS},
+	{101500, EXCHANGE_STATUS_NOTRADING},
+	{103000, EXCHANGE_STATUS_CONTINOUS},
+	{113000, EXCHANGE_STATUS_NOTRADING},
+	{133000, EXCHANGE_STATUS_CONTINOUS},
+	{150000, EXCHANGE_STATUS_CLOSED},
+	{205500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{205900, EXCHANGE_STATUS_AUCTION_MATCH},
+	{210000, EXCHANGE_STATUS_CONTINOUS},
+},
+
+ -- 上海
+SH = {
+	{000000, EXCHANGE_STATUS_CLOSED},
+	{074000, EXCHANGE_STATUS_BEFORE_TRADING},
+	{091500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{092000, EXCHANGE_STATUS_AUCTION_MATCH},	
+	{092500, EXCHANGE_STATUS_NOTRADING},
+	{093000, EXCHANGE_STATUS_CONTINOUS},
+	{113000, EXCHANGE_STATUS_NOTRADING},
+	{130000, EXCHANGE_STATUS_CONTINOUS},
+    {145700, EXCHANGE_STATUS_CLOSING_AUCTION_MATCH},
+	{150000, EXCHANGE_STATUS_CLOSED},	
+},
+
+ -- 深圳
+SZ = {
+	{000000, EXCHANGE_STATUS_CLOSED},
+	{074000, EXCHANGE_STATUS_BEFORE_TRADING}, 
+	{091500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{092000, EXCHANGE_STATUS_AUCTION_MATCH},
+	{092500, EXCHANGE_STATUS_NOTRADING},
+	{093000, EXCHANGE_STATUS_CONTINOUS},
+	{113000, EXCHANGE_STATUS_NOTRADING},
+	{130000, EXCHANGE_STATUS_CONTINOUS},
+	{145700, EXCHANGE_STATUS_AUCTION_MATCH},
+	{150000, EXCHANGE_STATUS_CLOSED},
+},
+
+ -- 北京
+BJ = {
+	{000000, EXCHANGE_STATUS_CLOSED},
+	{074000, EXCHANGE_STATUS_BEFORE_TRADING}, 
+	{091500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{092000, EXCHANGE_STATUS_AUCTION_MATCH},
+	{092500, EXCHANGE_STATUS_NOTRADING},
+	{093000, EXCHANGE_STATUS_CONTINOUS},
+	{113000, EXCHANGE_STATUS_NOTRADING},
+	{130000, EXCHANGE_STATUS_CONTINOUS},
+	{145700, EXCHANGE_STATUS_AUCTION_MATCH},
+	{150000, EXCHANGE_STATUS_CLOSED},
+},
+
+ -- 上海期权
+SHO = {
+	{000000, EXCHANGE_STATUS_CLOSED},
+	{074000, EXCHANGE_STATUS_BEFORE_TRADING},
+	{091500, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{092000, EXCHANGE_STATUS_AUCTION_MATCH},	
+	{092500, EXCHANGE_STATUS_NOTRADING},
+	{093000, EXCHANGE_STATUS_CONTINOUS},
+	{113000, EXCHANGE_STATUS_NOTRADING},
+	{130000, EXCHANGE_STATUS_CONTINOUS},
+	{145900, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{150000, EXCHANGE_STATUS_CLOSED},
+},
+
+ -- 深圳期权
+SZO = {
+    {000000, EXCHANGE_STATUS_CLOSED},
+    {074000, EXCHANGE_STATUS_BEFORE_TRADING},
+    {091500, EXCHANGE_STATUS_AUCTION_ORDERING},
+    {092000, EXCHANGE_STATUS_AUCTION_MATCH},
+    {092500, EXCHANGE_STATUS_NOTRADING},
+    {093000, EXCHANGE_STATUS_CONTINOUS},
+    {113000, EXCHANGE_STATUS_NOTRADING},
+    {130000, EXCHANGE_STATUS_CONTINOUS},
+    {145900, EXCHANGE_STATUS_AUCTION_ORDERING},
+    {150000, EXCHANGE_STATUS_CLOSED},
+},
+
+-- HGT
+HGT = {
+	{000000, EXCHANGE_STATUS_CLOSED},
+	{074000, EXCHANGE_STATUS_BEFORE_TRADING},
+	{090000, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{092200, EXCHANGE_STATUS_AUCTION_MATCH},
+	{093000, EXCHANGE_STATUS_CONTINOUS},
+	{120000, EXCHANGE_STATUS_NOTRADING},
+	{123000, EXCHANGE_STATUS_ONLY_CANCEL},
+	{130000, EXCHANGE_STATUS_CONTINOUS},
+	{160000, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{161000, EXCHANGE_STATUS_CLOSED},
+},
+
+-- SGT
+SGT = {
+	{000000, EXCHANGE_STATUS_CLOSED},
+	{074000, EXCHANGE_STATUS_BEFORE_TRADING},
+	{090000, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{092200, EXCHANGE_STATUS_AUCTION_MATCH},
+	{093000, EXCHANGE_STATUS_CONTINOUS},
+	{120000, EXCHANGE_STATUS_NOTRADING},
+	{123000, EXCHANGE_STATUS_ONLY_CANCEL},
+	{130000, EXCHANGE_STATUS_CONTINOUS},
+	{160000, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{161000, EXCHANGE_STATUS_CLOSED},
+},
+-- HK
+HK = {
+	{000000, EXCHANGE_STATUS_CLOSED},
+	{074000, EXCHANGE_STATUS_BEFORE_TRADING},
+	{090000, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{092200, EXCHANGE_STATUS_AUCTION_MATCH},
+	{093000, EXCHANGE_STATUS_CONTINOUS},
+	{120000, EXCHANGE_STATUS_NOTRADING},
+	{123000, EXCHANGE_STATUS_ONLY_CANCEL},
+	{130000, EXCHANGE_STATUS_CONTINOUS},
+	{160000, EXCHANGE_STATUS_AUCTION_ORDERING},
+	{161000, EXCHANGE_STATUS_CLOSED},
+},
+}
+
+--自定义品种（证券分类）、交易状态及操作类型配置
+local g_statusVariety = {
+SH = {
+	{150000, EXCHANGE_STATUS_CLOSED, 0, {XT_RCC_SYSTEM_CODE_SECURITIES_REPURCHASE}, {OPT_BUY, OPT_SELL}},
+	{150000, EXCHANGE_STATUS_CONTINOUS, 1, {XT_RCC_SYSTEM_CODE_SECURITIES_REPURCHASE}, {OPT_BUY, OPT_SELL}},
+	{153000, EXCHANGE_STATUS_CLOSED, 1, {XT_RCC_SYSTEM_CODE_SECURITIES_REPURCHASE}, {OPT_BUY, OPT_SELL}},
+	
+	-- 协议回购
+	{150000, EXCHANGE_STATUS_CLOSED, 0, {XT_RCC_SYSTEM_CODE_PLEDGE_REPURCHASE_SH}, {OPT_1045, OPT_1046, OPT_1047, OPT_1048, OPT_1049, OPT_1050}},
+	{150000, EXCHANGE_STATUS_CONTINOUS, 1, {XT_RCC_SYSTEM_CODE_PLEDGE_REPURCHASE_SH}, {OPT_1045, OPT_1046, OPT_1047, OPT_1048, OPT_1049, OPT_1050}},
+	{151500, EXCHANGE_STATUS_CLOSED, 1, {XT_RCC_SYSTEM_CODE_PLEDGE_REPURCHASE_SH}, {OPT_1045, OPT_1046, OPT_1047, OPT_1048, OPT_1049, OPT_1050}},
+	-- 现券交易
+	{140000, EXCHANGE_STATUS_CLOSED, 1, {XT_RCC_SYSTEM_CODE_CASH_TRANSACTIONS_SH}, {OPT_TRANSACTION_IN_CASH_BUY, OPT_TRANSACTION_IN_CASH_SELL}},
+},
+
+SZ = {
+	{145700, EXCHANGE_STATUS_AUCTION_MATCH, 0, {XT_RCC_SYSTEM_CODE_SECURITIES_REPURCHASE}, {OPT_BUY, OPT_SELL, OPT_PLEDGE_IN, OPT_PLEDGE_OUT}},
+	{150000, EXCHANGE_STATUS_CLOSED, 0, {XT_RCC_SYSTEM_CODE_SECURITIES_REPURCHASE}, {OPT_BUY, OPT_SELL, OPT_PLEDGE_IN, OPT_PLEDGE_OUT}},
+	{152700, EXCHANGE_STATUS_AUCTION_MATCH, 1, {XT_RCC_SYSTEM_CODE_SECURITIES_REPURCHASE}, {OPT_BUY, OPT_SELL, OPT_PLEDGE_IN, OPT_PLEDGE_OUT}},
+	{153000, EXCHANGE_STATUS_CLOSED, 1, {XT_RCC_SYSTEM_CODE_SECURITIES_REPURCHASE}, {OPT_BUY, OPT_SELL, OPT_PLEDGE_IN, OPT_PLEDGE_OUT}},
+	-- 协议回购
+	{150000, EXCHANGE_STATUS_CLOSED, 0, {XT_RCC_SYSTEM_CODE_PLEDGE_REPURCHASE_SZ}, {OPT_1045, OPT_1046, OPT_1047, OPT_1048, OPT_1049, OPT_1050}},
+	{150000, EXCHANGE_STATUS_CONTINOUS, 1, {XT_RCC_SYSTEM_CODE_PLEDGE_REPURCHASE_SZ}, {OPT_1045, OPT_1046, OPT_1047, OPT_1048, OPT_1049, OPT_1050}},
+	{153000, EXCHANGE_STATUS_CLOSED, 1, {XT_RCC_SYSTEM_CODE_PLEDGE_REPURCHASE_SZ}, {OPT_1045, OPT_1046, OPT_1047, OPT_1048, OPT_1049, OPT_1050}},
+},
+}
+
+-- 将lua中的table转换为json
+function trim(s)
+    return s:gsub("%s+", "") .. ""
+end
+
+-- 将lua中的table转换为json
+local function table2json(t)
+    local tab = "    "
+    local function serialize(indent, tbl)
+        local tmp = {}
+        local tempIndent = indent .. tab
+        for k, v in pairs(tbl) do
+            local k_type = type(k)
+            local v_type = type(v)
+            local key = (k_type == "string" and "\"" .. k .. "\" : ")
+                or (k_type == "number" and "")
+            local value = (v_type == "table" and serialize(indent .. tab, v))
+                or (v_type == "boolean" and tostring(v))
+                or (v_type == "string" and "\"" .. v .. "\"")
+                or (v_type == "number" and v)
+            if (v_type ~= "table") or (table.maxn(v) ~= 0) or (trim(value) ~= "{}") then
+                tmp[#tmp + 1] = key and value and (tempIndent .. tostring(key) .. tostring(value) or nil)
+            end
+        end
+        if table.maxn(tbl) == 0 then
+            return "{\n" .. table.concat(tmp, ",\n") .. "\n" .. indent .. "}"
+        else
+            return "[\n" .. table.concat(tmp, ",\n") .. "\n" .. indent .. "]"
+        end
+    end
+    assert(type(t) == "table")
+    return serialize("", t)
+end
+
+function getStatus(timeTag)
+	local ret = {}
+	for k, v in pairs(g_status) do
+		ret[k] = getMarketStatus(k, timeTag)
+	end
+	return table2json(ret)
+end
+
+function getMarkets(timeTag)
+    local ret = {}
+    for k, v in pairs(g_status) do
+        ret[k] = k
+    end
+    return table2json(ret)
+end
+
+function getMarketTradeDuration(market)
+    local ret = {}
+    local marketInfo = g_status[market]
+    for k, v in pairs(marketInfo) do
+        ret[tostring(v[1])] = v[2]
+    end
+    return table2json(ret)
+end
+
+function getMarketStatus(market, timeTag)
+	local iTimeTag = tonumber(timeTag)
+	local ret = EXCHANGE_STATUS_BEFORE_TRADING
+	local marketInfo = g_status[market]
+	if marketInfo ~= nil then
+		for	_, v in pairs(marketInfo) do 
+			if v[1] > iTimeTag then 
+				break
+			else
+				ret = v[2]
+			end
+		end		
+	end
+	return ret
+end
+
+--支持自定义品种或证券分类交易状态配置
+function getStatusIMproved(timeTag)
+	local ret = {}
+	for k, v in pairs(g_status) do
+		ret[k] = {}
+		ret[k] = getMarketStatusIMproved(k, timeTag)
+	end
+	return disPatchMarketStatusJson(ret)
+end
+
+function getMarketStatusIMproved(market, timeTag)
+	local iTimeTag = tonumber(timeTag)
+	local status = {}
+	--XT_RCC_SYSTEM_CODE_SECURITIES_ALL 1001
+	status[tostring(XT_RCC_SYSTEM_CODE_SECURITIES_ALL)] = EXCHANGE_STATUS_BEFORE_TRADING
+	local tmpStatus = EXCHANGE_STATUS_BEFORE_TRADING
+	local marketInfo = g_status[market]
+	local marketVariety = g_statusVariety[market]
+	if marketInfo ~= nil then
+		local marketCom = combinationAndSort(marketInfo, marketVariety)
+		for	_, v in pairs(marketCom) do
+			if v[1] > iTimeTag then 
+				break
+			else
+				if v[4] ~= nil and v[3] ~= nil then
+					for _, nType in pairs(v[4]) do
+						if v[3] == 0 then
+							status[tostring(nType)] = tmpStatus
+							status[tostring(XT_RCC_SYSTEM_CODE_SECURITIES_ALL)] = v[2]
+						elseif v[3] == 1 then
+							status[tostring(nType)] = v[2]
+							tmpStatus = v[2]	--视配置情况
+						end
+						if v[5] ~= nil then
+							for _, opt in pairs(v[5]) do 
+								status["OPT"..tostring(opt)] = opt
+							end
+						end
+					end
+				else
+					--status[tostring(XT_RCC_SYSTEM_CODE_SECURITIES_ALL)] = v[2]
+					for strType, _ in pairs(status) do 
+						status[strType] = v[2]
+					end
+					tmpStatus = v[2]
+				end
+			end
+		end
+	end
+	return status
+end
+
+function combinationAndSort(marketInfo, marketVariety)
+	if marketVariety ~= nil then
+		for k, v in pairs(marketVariety) do
+			for t, r in pairs(marketInfo) do
+				if r[1] ~= nil and v[1] ~= nil and r[1] == v[1] then
+					table.remove(marketInfo, t)
+					break
+				end
+			end
+		end
+		for k, v in pairs(marketVariety) do
+			table.insert(marketInfo, v)
+		end
+		table.sort(marketInfo, function(a,b) return a[1]<b[1] end)
+	end
+	return marketInfo
+end
+
+function disPatchMarketStatusJson(rawTable)
+	marketFlag = false
+	retStrJson = "{\n "
+	for k, v in pairs(rawTable) do
+		if not marketFlag then
+			marketFlag = true
+		else
+			retStrJson = retStrJson .. "],\n"
+		end
+		retStrJson = retStrJson .. "\"" .. k .. "\": [ "
+		typeFlag = false
+		for t, s in pairs(v) do
+			if not typeFlag then
+				typeFlag = true
+			else
+				retStrJson = retStrJson .. ","
+			end
+			retStrJson = retStrJson .. "\"" .. t .. "\", " .. s
+		end
+	end
+	retStrJson = retStrJson .. "]\n}"
+	return retStrJson
+end
+
+local function test()
+	print(getMarketStatus("SHFE", 141800) == EXCHANGE_STATUS_CONTINOUS)
+	print(getMarketStatus("SHFE", 194500) == EXCHANGE_STATUS_CLOSED)
+	print(getMarketStatus("SHFE", 230000) == EXCHANGE_STATUS_CONTINOUS)
+	print(getMarketStatus("SHFE", 10000) == EXCHANGE_STATUS_CONTINOUS)
+	print(getMarketStatus("SHFE", 30000) == EXCHANGE_STATUS_BEFORE_TRADING)
+	print(getMarketStatus("SHFE", 100000) == EXCHANGE_STATUS_CONTINOUS)
+	
+	print(getMarketStatus("CFFEX", 141800) == EXCHANGE_STATUS_CONTINOUS)
+	print(getMarketStatus("CFFEX", 194500) == EXCHANGE_STATUS_CLOSED)
+	print(getMarketStatus("CFFEX", 000000) == EXCHANGE_STATUS_CLOSED)
+	print(getMarketStatus("CFFEX", 074000) == EXCHANGE_STATUS_BEFORE_TRADING)
+	print(getMarketStatus("CFFEX", 091500) == EXCHANGE_STATUS_CONTINOUS)
+	print(getMarketStatus("CFFEX", 100000) == EXCHANGE_STATUS_CONTINOUS)
+	
+	print(getMarketStatus("CZCE", 141800) == EXCHANGE_STATUS_CONTINOUS)
+	print(getMarketStatus("CZCE", 194500) == EXCHANGE_STATUS_CLOSED)
+	print(getMarketStatus("CZCE", 010000) == EXCHANGE_STATUS_CLOSED)
+	print(getMarketStatus("CZCE", 075000) == EXCHANGE_STATUS_BEFORE_TRADING)
+	print(getMarketStatus("CZCE", 085500) == EXCHANGE_STATUS_AUCTION_ORDERING)
+	print(getMarketStatus("CZCE", 085900) == EXCHANGE_STATUS_AUCTION_MATCH)
+	print(getMarketStatus("CZCE", 091000) == EXCHANGE_STATUS_CONTINOUS)
+	print(getMarketStatus("CZCE", 102000) == EXCHANGE_STATUS_NOTRADING)
+	print(getMarketStatus("CZCE", 103500) == EXCHANGE_STATUS_CONTINOUS)
+	print(getMarketStatus("CZCE", 133000) == EXCHANGE_STATUS_CONTINOUS)
+end
+
+--test()
+--n = io.read()
+--require "std"
